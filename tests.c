@@ -8,12 +8,13 @@ int main()
 {
   //tLapack();
   //tTrace();
-  //tPTrace();
+  test_partial_trace();
   //tEntropy();
   //int tCoherence();  tCoherence();
-  tKroneckerP();
+  //tKroneckerP();
   return 0;
 }
+/*
 //-----------------------------------------------------------------------------------------------------------------------------------
 int tKroneckerP()
 {
@@ -30,7 +31,6 @@ int tKroneckerP()
   }
   return 0;
 }
-/*
 //-----------------------------------------------------------------------------------------------------------------------------------
 int tEntropy()
 {
@@ -96,25 +96,26 @@ int tTrace(){
   tr_ge = trace_ge(&N,HM);
   printf("%10.5f +I*%10.5f \n", creal(tr_ge), cimag(tr_ge));
   return 0;}
+  */
 //-----------------------------------------------------------------------------------------------------------------------------------
-int tPTrace(){
+int test_partial_trace()
+{
   int da = 2, db = 2, d = da*db;
   double _Complex rho[d][d];  // In C, arrays are automatically initialized to zero
   int j, k;
   double _Complex rho_b[db][db];
   
-  rho[0][0] = 1.0/2.0;  // phi+ Bell state
-  rho[0][3] = 1.0/2.0;
-  rho[3][0] = 1.0/2.0;
-  rho[3][3] = 1.0/2.0;
-  int partial_trace_a();  partial_trace_a(&da, &db, rho, rho_b);
+  // phi+ Bell state
+  rho[0][0] = 1.0/2.0;  rho[0][3] = 1.0/2.0;  rho[3][0] = 1.0/2.0;  rho[3][3] = 1.0/2.0;
+  partial_trace_a(&da, &db, rho, rho_b);
   for (j = 0; j < db ; j++)
   {
     for (k = 0; k < db ; k++)
     {
-      printf("%f + %f*I \n", creal(rho_b[j][k]), cimag(rho_b[j][k]));
+      printf("%f + %f*I \t", creal(rho_b[j][k]), cimag(rho_b[j][k]));
     }
+    printf("\n");
   }
-  return 0;}
+  return 0;
+}
 //-----------------------------------------------------------------------------------------------------------------------------------
-*/
