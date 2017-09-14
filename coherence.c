@@ -16,12 +16,11 @@ double coh_l1(int* d, double _Complex rho[][*d]){  // Returns the l1-norm cohere
   return coh;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------
-double coh_re(int* d, double _Complex rho[][*d])  //Returns the relative entropy of quantum coherence
-{ // Ref: T. Baumgratz, M. Cramer e M. B. Plenio, Quantifying coherence, PRL 113, 140401 (2014)
+double coh_re(int* d, double _Complex rho[][*d]){  //Returns the relative entropy of quantum coherence
+// Ref: T. Baumgratz, M. Cramer e M. B. Plenio, Quantifying coherence, PRL 113, 140401 (2014)
   int j;
   double pv[*d];
-  for(j = 0; j < (*d); j++)
-  {
+  for(j = 0; j < (*d); j++){
     pv[j] = creal(rho[j][j]);   
   }
   double coh, shannon(), neumann();  

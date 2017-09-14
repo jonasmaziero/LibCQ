@@ -7,18 +7,23 @@ int lapacke_zheevd(char* jobz, int* D, double _Complex B[][*D], double* W)
   lapack_int d = *D;
   lapack_complex_double A[d][d];
   int j, k;
-  for(j = 0; j < (*D); j++){  
-    for(k = 0; k < (*D); k++){
+  for (j = 0; j < (*D); j++)
+  {  
+    for (k = 0; k < (*D); k++)
+    {
       A[j][k] = B[j][k];
     }
   }
   char JOBZ = *jobz;
-  // the eigenvalues return in W, in ascending order
+  // the eigenvalues are returned in W, in ascending order
   info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, JOBZ, 'U', d, *A, d, W);  
   // to return the eigenvectors in B
-  if(*jobz == 'V'){
-    for(j = 0; j < (*D); j++){  
-      for(k = 0; k < (*D); k++){
+  if (*jobz == 'V')
+  {
+    for (j = 0; j < (*D); j++)
+    {  
+      for (k = 0; k < (*D); k++)
+      {
         B[j][k] = A[j][k];
       }
     }

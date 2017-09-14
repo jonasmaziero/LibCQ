@@ -6,7 +6,6 @@ double neumann(int* d, double _Complex rho[][*d]) //! Returns the von Neumann en
 { // d  ! Dimension of the density matrix
   // rho(d,d)  ! Density matrix
   double _Complex A[*d][*d];
-  //A[][] = (double _Complex *)malloc(d*d*sizeof(double _Complex))
   int j, k;
   for(j = 0; j < (*d); j++)
   {
@@ -18,7 +17,6 @@ double neumann(int* d, double _Complex rho[][*d]) //! Returns the von Neumann en
   char jobz = 'N';
   double W[*d];
   int lapacke_zheevd();  lapacke_zheevd(&jobz, d, A, W);
-  //free(A);
   double vNE, shannon();  // Variables for the shannon and von Neumann entropies
   vNE = shannon(d, W);
   return vNE;
