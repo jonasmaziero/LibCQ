@@ -4,17 +4,38 @@
 #include <math.h>
 #include <complex.h>
 //-----------------------------------------------------------------------------------------------------------------------------------
-int main()
+void main()
 {
   //tLapack();
   //tTrace();
-  test_partial_trace();
+  void test_partial_trace(); test_partial_trace();
   //tEntropy();
   //int tCoherence();  tCoherence();
   //tKroneckerP();
-  return 0;
+  //void test_rng();  test_rng();
+  //return 0;
 }
-/*
+//-----------------------------------------------------------------------------------------------------------------------------------
+/*void test_rng()
+{
+  int j;
+  FILE *fp;
+  char output[] = "output.txt";
+  unsigned long long int seed;
+  double genrand64_real1();
+  srand(time(NULL));  seed = rand();  init_genrand64(seed);
+  fp = fopen(output, "w+");
+  for (j = 0; j < 10001; j++)
+  {
+    fprintf(fp, "%15.10f \t %15.10f \n", genrand64_real1(), genrand64_real1());
+  }
+  for (j = 0; j < 10; j++)
+  {
+    fscanf(fp, "%15.10f \t %15.10f \n", genrand64_real1(), genrand64_real1());
+    printf("%15.10f \t %15.10f \n", genrand64_real1(), genrand64_real1());
+  }
+  fclose(fp);
+}
 //-----------------------------------------------------------------------------------------------------------------------------------
 int tKroneckerP()
 {
@@ -95,27 +116,23 @@ int tTrace(){
   printf("%10.5f \n", tr);
   tr_ge = trace_ge(&N,HM);
   printf("%10.5f +I*%10.5f \n", creal(tr_ge), cimag(tr_ge));
-  return 0;}
-  */
+  return 0;
+}*/
 //-----------------------------------------------------------------------------------------------------------------------------------
-int test_partial_trace()
+void test_partial_trace()
 {
-  int da = 2, db = 2, d = da*db;
+  int da = 2, db = 4, d = da*db;
   double _Complex rho[d][d];  // In C, arrays are automatically initialized to zero
   int j, k;
-  double _Complex rho_b[db][db];
+  double _Complex rho_b[db][db], rho_a[da][da];
   
   // phi+ Bell state
-  rho[0][0] = 1.0/2.0;  rho[0][3] = 1.0/2.0;  rho[3][0] = 1.0/2.0;  rho[3][3] = 1.0/2.0;
+  //rho[0][0] = 1.0/2.0;  rho[0][3] = 1.0/2.0;  rho[3][0] = 1.0/2.0;  rho[3][3] = 1.0/2.0;
+  // W state
+  rho[1][1] = 1.0/3.0;  rho[1][2] = 1.0/3.0;  rho[1][4] = 1.0/3.0;  
+  rho[2][1] = 1.0/3.0;  rho[2][2] = 1.0/3.0;  rho[2][4] = 1.0/3.0; rho[4][1] = 1.0/3.0;  rho[4][2] = 1.0/3.0;  rho[4][4] = 1.0/3.0;
   partial_trace_a(&da, &db, rho, rho_b);
-  for (j = 0; j < db ; j++)
-  {
-    for (k = 0; k < db ; k++)
-    {
-      printf("%f + %f*I \t", creal(rho_b[j][k]), cimag(rho_b[j][k]));
-    }
-    printf("\n");
-  }
-  return 0;
+  //partial_trace_b(&da, &db, rho, rho_a);
+  array_display(&db, &db, rho_b);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------

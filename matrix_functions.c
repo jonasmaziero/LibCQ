@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------------------------------------------------------------
-//#include <stdio.h>
+#include <stdio.h>
 #include <complex.h>
 //-----------------------------------------------------------------------------------------------------------------------------------
 double trace(int* N, double _Complex HM[][*N]) // Computes the trace of an HERMITIAN NxN matrix
@@ -24,7 +24,7 @@ double _Complex trace_ge(int* N, double _Complex GM[][*N]) // Computes the trace
   return trace;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------
-int projector(int* d, double _Complex* psi, double _Complex rho[][*d])  // returns the projector on state psi
+void projector(int* d, double _Complex* psi, double _Complex rho[][*d])  // returns the projector on state psi
 { // d  ! Dimension of the vector
   // psi(d)  ! Vector we want the projector on
   // rho(d,d)  ! Projector on vec
@@ -37,11 +37,10 @@ int projector(int* d, double _Complex* psi, double _Complex rho[][*d])  // retur
       if(j != k){ rho[k][j] = conj(rho[j][k]); } // Elements below the diagonal
     }  
   }
-  return 0;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 // Returns the tensor product of two general complex matrices
-int kronecker_product(int* ra, int* ca, int* rb, int* cb, 
+void kronecker_product(int* ra, int* ca, int* rb, int* cb, 
                       double _Complex A[][*ca], double _Complex B[][*cb], double _Complex KP[][(*ca)*(*cb)])  
 {
   // ra, ca, rb, cb  ! Number of rows and columns of the two matrices
@@ -70,6 +69,29 @@ int kronecker_product(int* ra, int* ca, int* rb, int* cb,
       }
     }
   }
-  return 0;
+}
+//-----------------------------------------------------------------------------------------------------------------------------------
+// Shows the real and imaginary parts of an array in the screen
+void array_display(int* r, int* c, double _Complex array[][*c])
+{
+  int j, k;
+  printf("real part \n");
+  for (j = 0; j < (*r); j++)
+  {
+    for (k = 0; k < (*c); k++)
+    {
+      printf("%f \t", creal(array[j][k]));
+    }
+    printf("\n");
+  }
+  printf("imaginary part \n");
+  for (j = 0; j < (*r); j++)
+  {
+    for (k = 0; k < (*c); k++)
+    {
+      printf("%f \t", cimag(array[j][k]));
+    }
+    printf("\n");
+  }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------
