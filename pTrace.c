@@ -5,17 +5,14 @@
 //#include <math.h>
 //------------------------------------------------------------------------------
 void pTraceTest(){
-<<<<<<< HEAD
   int da = 2, db = 2, dc = 2, d = da*db*dc, dac = da*dc;
   double _Complex rho[d][d];  // Arrays must be initialized in C
   int j, k;
   double _Complex rho_b[db][db], rho_a[da][da], rho_ac[da*dc][da*dc];
-=======
   int da = 2, db = 4, d = da*db;
   double _Complex rho[d][d];  // Arrays must be initialized in C
   int j, k;
   double _Complex rho_b[db][db], rho_a[da][da];
->>>>>>> dadec15c06da70b95046f6c7311b09a8024f1e31
 
   for (j = 0; j < d; j++){
     for (k = 0; k < d; ++k){
@@ -25,7 +22,7 @@ void pTraceTest(){
   rho[1][1] = 1.0/3.0;  rho[1][2] = 1.0/3.0;  rho[1][4] = 1.0/3.0;
   rho[2][1] = 1.0/3.0;  rho[2][2] = 1.0/3.0;  rho[2][4] = 1.0/3.0;
   rho[4][1] = 1.0/3.0;  rho[4][2] = 1.0/3.0;  rho[4][4] = 1.0/3.0;
-<<<<<<< HEAD
+
   void array2DisplayC();
   //array2DisplayC(&d, &d, rho);
   //void pTraceR();  pTraceR(&da, &db, rho, rho_b);
@@ -345,15 +342,10 @@ void pTrace3(int *da, int *db, int *dc,
           for (k = 0; k < (*db); k++) {
             rhoAC[cj][ck] += rhoABC[ccj + k*(*dc)][cck + k*(*dc)];
           }
->>>>>>> dadec15c06da70b95046f6c7311b09a8024f1e31
         }
       }
     }
   }
-<<<<<<< HEAD
 }
-=======
-
->>>>>>> dadec15c06da70b95046f6c7311b09a8024f1e31
 }
 //------------------------------------------------------------------------------

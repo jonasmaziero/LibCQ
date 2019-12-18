@@ -19,8 +19,8 @@ void coh_test(){
   {
     psi_1qb(&theta, &phi, psi);  // calls the function which modifies psi in memory
     //printf("%f +I*%f, %f +I*%f \n", creal(psi[0]), cimag(psi[0]), creal(psi[1]), cimag(psi[1]));
-    int projector();  projector(&d, psi, rho);  // calls the function which modifies rho in memory 
-    coh1 = coh_l1(&d, rho);  coh2 = coh_re(&d, rho);  
+    int projector();  projector(&d, psi, rho);  // calls the function which modifies rho in memory
+    coh1 = coh_l1(&d, rho);  coh2 = coh_re(&d, rho);
     printf("%f \t %f \t %f \n", theta, coh1, coh2);
     theta += delta;
   }
@@ -29,11 +29,11 @@ void coh_test(){
 double coh_l1(int *d, double _Complex rho[][*d]){  // Returns the l1-norm coherence
 // Ref: T. Baumgratz, M. Cramer e M. B. Plenio, Quantifying coherence, PRL 113, 140401 (2014)
   int j, k;
-  double coh = 0.0;  
+  double coh = 0.0;
   for(j = 0; j < ((*d)-1); j++){
     for(k = j+1; k < (*d); k++){  // sum only the above-the-diagonal elements
       coh += sqrt( pow(creal(rho[j][k]),2.0) + pow(cimag(rho[j][k]),2.0) ); // pow(double x, double y) = x**y
-    }   
+    }
   }
   return 2.0*coh;
 }
@@ -43,10 +43,10 @@ double coh_re(int *d, double _Complex rho[][*d]){  //Returns the relative entrop
   int j;
   double pv[*d];
   for(j = 0; j < (*d); j++){
-    pv[j] = creal(rho[j][j]);   
+    pv[j] = creal(rho[j][j]);
   }
-  double coh, shannon(), neumann();  
+  double coh, shannon(), neumann();
   coh = shannon(d, pv) - neumann(d, rho);
-  return coh;  
+  return coh;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------
