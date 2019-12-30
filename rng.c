@@ -66,7 +66,7 @@ void rng_gauss(double *grn1, double *grn2){
   rn = genrand64_real1(); if (rn < 1.e-15) rn = 1.0E-15;
   logterm = sqrt(-2.0*log(rn));  angle = 2.0*M_PI*genrand64_real1();
   (*grn1) = logterm*cos(angle); (*grn2) = logterm*sin(angle); //*/
-  // Marsaglia method (avoids sin and cos)
+  // Marsaglia method (avoids sin and cos calcs)
   double u, v, s = 2.0, w, a = -1.0, b = 1.0;
   void rn_ab(double *, double *, double *);
   do {
