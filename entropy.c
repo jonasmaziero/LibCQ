@@ -1,43 +1,52 @@
-//-----------------------------------------------------------------------------------------------------------------------------------
+// gcc entropy.c lapack.c -llapacke -lm
 #include <stdio.h>
-//#include <math.h>
-//-----------------------------------------------------------------------------------------------------------------------------------
-int entropy_test(){
-  int d = 2;
-  //double pv[] = {0.7,0.3};
-  //double SE, shannon();  SE = shannon(&d, pv);  printf("%f \n", SE); // ok
-  double _Complex rho[d][d]; rho[0][0] = 0.5;  rho[0][1] = 0.0;  rho[1][0] = 0.0;  rho[1][1] = 0.5;
-  double vNE, neumann();  vNE = neumann(&d, rho);  printf("%f \n", vNE);
-  return 0;
-}
-//-----------------------------------------------------------------------------------------------------------------------------------
-double neumann(int *d, double _Complex rho[][*d]){ //! Returns the von Neumann entropy of a density matrix
-  // d  ! Dimension of the density matrix
-  // rho(d,d)  ! Density matrix
-  double _Complex A[*d][*d];
+#include <math.h>
+#include <stdlib.h>
+
+double neumann(int *d, double _Complex *rho){ 
+  // Returns the von Neumann entropy of a density matrix
+  double _Complex *A;
+  A = (double _Complex *)malloc((*d)*(*d)*sizeof(double _Complex)); 
   int j, k;
-  for(j = 0; j < (*d); j++){
-    for(k = 0; k < (*d); k++){
-      A[j][k] = rho[j][k];
+  for (j = 0; j < (*d); j++) {
+    for (k = 0; k < (*d); k++) {
+      *(A+j*(*d)+k) = *(rho+j*(*d)+k);
     }
   }
-  char jobz = 'N';  double W[*d];  lapacke_zheevd(&jobz, d, A, W);
-  double vNE, shannon();  // Variables for the shannon and von Neumann entropies
-  vNE = shannon(d, W);
-  return vNE;
+  char jobz = 'N';
+  double *W;
+  W = (double *)malloc((*d)*sizeof(double)); 
+  lapacke_zheevd(&jobz, d, A, W);
+  free(A);
+  double vne, shannon(int *, double *);
+  vne = shannon(d, W);
+  free(W);
+  return vne;
 }
-//-----------------------------------------------------------------------------------------------------------------------------------
-double shannon(int *d, double *pv){ // Returns the Shannon entropy of a probability vector
-  // d  ! Dimension of the probability vector
-  // pv(d)  ! probability vector
+
+double shannon(int *d, double *pv) {
   int j;
-  double SE = 0.0;
-  double log2();
-  for(j = 0; j < (*d); j++){ 
-    if((pv[j] > 1.e-15) && (pv[j] < (1.0-1.e-15))){ 
-      SE -= pv[j]*log2(pv[j]);
+  double se = 0.0;
+  for (j = 0; j < (*d); j++) { 
+    if ((pv[j] > 1.e-15) && (pv[j] < (1.0-1.e-15))) { 
+     se -= (*(pv+j))*log2(*(pv+j));
     }  
   }
-  return SE;
+  return se;
 }
-//-----------------------------------------------------------------------------------------------------------------------------------
+
+/*
+int main() {
+  int d = 2;
+  double pv[] = {0.5,0.5};
+  double shannon(int *, double *);  
+  printf("%f \n", shannon(&d, pv));
+
+  double _Complex *rho;
+  rho = (double _Complex *)malloc(d*d*sizeof(double _Complex)); 
+  *(rho+0*d+0) = 0.75; *(rho+0*d+1) = 0.0; *(rho+1*d+0) = 0.0; *(rho+1*d+1) = 0.25;
+  double neumann(int *, double _Complex *);
+  printf("%f \n", neumann(&d, rho));
+  return 0;
+}
+*/

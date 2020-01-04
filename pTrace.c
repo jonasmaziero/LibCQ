@@ -198,7 +198,6 @@ for (j = 0; j < (*da); j++) {
         for (k = 0; k < (*db); k++) {
           kdc = k*(*dc);
           *(AC+ck+cj*dac) += *(ABC+cck+kdc+(ccj+kdc)*d);
-=======
   //array_display(&d, &d, rho);
   //void partial_trace_a();  partial_trace_a(&da, &db, rho, rho_b);
   //ArrayDisplayC(&db, &db, rho_b);

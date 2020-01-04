@@ -7,7 +7,8 @@ int main()
   //void entanglement_test(); entanglement_test();
   //void rpvg_test(); rpvg_test();
   //void test_rand_circle(); test_rand_circle();
-  void rng_test(); rng_test();
+  //void rng_test(); rng_test();
+  void test_norm(); test_norm();
   return 0;
 }
 //------------------------------------------------------------------------------

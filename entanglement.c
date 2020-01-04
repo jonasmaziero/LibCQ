@@ -1,9 +1,9 @@
-//------------------------------------------------------------------------------
+
 #include <complex.h>
 #include <math.h>
 #include <stdio.h>
 #include <sys/utsname.h>
-//------------------------------------------------------------------------------
+
 void entanglement_test(){
   double p = 0.0, dp = 0.01, Ec;
   double _Complex rhop[4][4];
@@ -36,7 +36,7 @@ void entanglement_test(){
     system("open -a skim ent.eps & \n");
   }
 }
-//------------------------------------------------------------------------------
+
 // Returns the entanglement concurrence, for two-qubit states
 double concurrence(int *d, double _Complex rho[][*d]){
   void ArrayDisplayC();
@@ -59,4 +59,3 @@ double concurrence(int *d, double _Complex rho[][*d]){
   double conc = 0.0;  if(cc > 0.0){conc = cc;}
   return conc;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
