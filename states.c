@@ -4,9 +4,9 @@
 #include <math.h>
 #include <complex.h>
 
-void psi1qb(double *theta, double *phi, double _Complex *psi) {
-  *(psi+0) = cos((*theta)/2.0);  
-  *(psi+1) = sin((*theta)/2.0)*(cos((*phi)) + I*sin((*phi)));
+void psi1qb(long double *theta, long double *phi, long double _Complex *psi) {
+  *(psi+0) = cosl((*theta)/2.0);  
+  *(psi+1) = sinl((*theta)/2.0)*(cosl((*phi)) + I*sinl((*phi)));
 }
 
 void bell(double _Complex *phip, double _Complex *psip, double _Complex *phim, double _Complex *psim){

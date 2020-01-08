@@ -1,4 +1,3 @@
-//------------------------------------------------------------------------------
 #include <lapacke.h>
 #include <stdio.h>
 #include <math.h>
@@ -6,9 +5,8 @@
 #include <stdlib.h>
 // install lapacke with: sudo apt-get install liblapacke-dev
 // compile with: gcc -llapacke name.c
-//------------------------------------------------------------------------------
 // To see how to call the subroutines, take a look at the lapacke.h file in /usr/local/include
-//------------------------------------------------------------------------------
+
 void lapack_test(){
   int D = 2;
   char jobz = 'V';
@@ -30,7 +28,7 @@ void lapack_test(){
   printf("%f + %f*I, \t %f + %f*I \n",
           creal(B2[0][1]), cimag(B2[0][1]), creal(B2[1][1]), cimag(B2[1][1]));
 }
-//------------------------------------------------------------------------------
+
 void lapacke_zheevd(char *jobz, int *D, double _Complex B[][*D], double *W){
   lapack_int info;
   lapack_int d = *D;
@@ -51,7 +49,7 @@ void lapacke_zheevd(char *jobz, int *D, double _Complex B[][*D], double *W){
     }
   }
 }
-//------------------------------------------------------------------------------
+
 void lapacke_zgeev(char *jobz, int *D, double _Complex B[][*D], double _Complex *W){
   lapack_int info;
   lapack_int d = *D;
@@ -72,4 +70,3 @@ void lapacke_zgeev(char *jobz, int *D, double _Complex B[][*D], double _Complex 
     }
   }
 }
-//------------------------------------------------------------------------------
