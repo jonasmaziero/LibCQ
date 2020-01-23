@@ -153,6 +153,11 @@ double genrand64_real1(void)
     return (genrand64_int64() >> 11) * (1.0/9007199254740991.0);
 }
 
+long double genrand64_real1l(void) // jm
+{
+    return (genrand64_int64() >> 11) * (1.0/9007199254740991.0);
+}
+
 /* generates a random number on [0,1)-real-interval */
 double genrand64_real2(void)
 {

@@ -3,11 +3,56 @@
 #include <math.h>
 #include <complex.h>
 #include <stdlib.h>
-// install lapacke with: sudo apt-get install liblapacke-dev
-// compile with: gcc -llapacke name.c
-// To see how to call the subroutines, take a look at the lapacke.h file in /usr/local/include
+/* 
+install lapacke with: sudo apt-get install liblapacke-dev
+To see how to call the subroutines, take a look at the lapacke.h file in 
+/usr/local/include
+*/
 
-void lapack_test(){
+void lapacke_zheevd(char *jobz, int *D, double _Complex B[][*D], double *W) {
+  lapack_int info;
+  lapack_int d = *D;
+  lapack_complex_double A[d][d];
+  int j, k;
+  for (j = 0; j < (*D); j++) {
+    for (k = 0; k < (*D); k++) {
+      A[j][k] = B[j][k];
+    }
+  }
+  char JOBZ = *jobz;
+  info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, JOBZ, 'U', d, *A, d, W);
+  if (*jobz == 'V') {
+    for (j = 0; j < (*D); j++) {
+      for (k = 0; k < (*D); k++) {
+        B[j][k] = A[j][k];
+      }
+    }
+  }
+}
+
+void lapacke_zgeev(char *jobz, int *D, double _Complex B[][*D], double _Complex *W) {
+  lapack_int info;
+  lapack_int d = *D;
+  lapack_complex_double Ac[d][d], A[d][d], C[d][d];
+  int j, k;
+  for (j = 0; j < (*D); j++) {
+    for (k = 0; k < (*D); k++) {
+      A[j][k] = B[j][k];
+    }
+  }
+  char jobvr = *jobz, jobvl = 'N';
+  info = LAPACKE_zgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, d, *Ac, d, W, *C, d, *A, d);
+  if (*jobz == 'V') {
+    for (j = 0; j < (*D); j++) {
+      for (k = 0; k < (*D); k++) {
+        B[j][k] = A[j][k];
+      }
+    }
+  }
+}
+
+/*
+int main() {
   int D = 2;
   char jobz = 'V';
   double _Complex B1[D][D], B2[D][D], egval[D];
@@ -27,46 +72,8 @@ void lapack_test(){
           creal(B2[0][0]), cimag(B2[0][0]), creal(B2[1][0]), cimag(B2[1][0]));
   printf("%f + %f*I, \t %f + %f*I \n",
           creal(B2[0][1]), cimag(B2[0][1]), creal(B2[1][1]), cimag(B2[1][1]));
+  return 0;
 }
+*/
 
-void lapacke_zheevd(char *jobz, int *D, double _Complex B[][*D], double *W){
-  lapack_int info;
-  lapack_int d = *D;
-  lapack_complex_double A[d][d];
-  int j, k;
-  for (j = 0; j < (*D); j++){
-    for (k = 0; k < (*D); k++){
-      A[j][k] = B[j][k];
-    }
-  }
-  char JOBZ = *jobz;
-  info = LAPACKE_zheevd(LAPACK_ROW_MAJOR, JOBZ, 'U', d, *A, d, W);
-  if (*jobz == 'V'){
-    for (j = 0; j < (*D); j++){
-      for (k = 0; k < (*D); k++){
-        B[j][k] = A[j][k];
-      }
-    }
-  }
-}
-
-void lapacke_zgeev(char *jobz, int *D, double _Complex B[][*D], double _Complex *W){
-  lapack_int info;
-  lapack_int d = *D;
-  lapack_complex_double Ac[d][d], A[d][d], C[d][d];
-  int j, k;
-  for (j = 0; j < (*D); j++){
-    for (k = 0; k < (*D); k++){
-      Ac[j][k] = B[j][k];
-    }
-  }
-  char jobvr = *jobz, jobvl = 'N';
-  info = LAPACKE_zgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, d, *Ac, d, W, *C, d, *A, d);
-  if (*jobz == 'V'){
-    for (j = 0; j < (*D); j++){
-      for (k = 0; k < (*D); k++){
-        B[j][k] = A[j][k];
-      }
-    }
-  }
-}
+//  gcc lapack.c -llapacke
