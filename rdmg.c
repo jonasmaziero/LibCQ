@@ -6,25 +6,24 @@
 #include <time.h>
 
 
-void rdm_ginibre(int *d, double _Complex *rrho) {
-  void zero_mat_c(int *, int *, double _Complex *); zero_mat_c(d,d,rrho);
+void rdm_ginibre(int *d, double _Complex *rdm) {
+  void zero_mat_c(int *, int *, double _Complex *); 
+  zero_mat_c(d,d,rdm);
   int j, k, l;
-  //void array_display_c(int *, int *, double _Complex *); 
-  //printf("rrho \n"); array_display_c(d,d,rrho);
-  double _Complex *G; G = (double _Complex *)malloc((*d)*(*d)*sizeof(double _Complex));
-  void ginibre(int *, double _Complex *); ginibre(d, G);
-  double N2, norm_hs(int *, double _Complex *); N2 = pow(norm_hs(d,G),2);
+  double _Complex *G; 
+  G = (double _Complex *)malloc((*d)*(*d)*sizeof(double _Complex));
+  void ginibre(int *, double _Complex *); 
+  ginibre(d, G);
+  double N2, norm_hs(int *, double _Complex *); 
+  N2 = pow(norm_hs(d,G),2);
   for (j = 0; j < (*d); j++) {
     for (k = j; k < (*d); k++) {
       for (l = 0; l < (*d); l++) {
-        *(rrho+j*(*d)+k) += (creal(*(G+l*(*d)+j)))*(creal(*(G+l*(*d)+k)));
-        *(rrho+j*(*d)+k) += (cimag(*(G+l*(*d)+j)))*(cimag(*(G+l*(*d)+k)));
-        *(rrho+j*(*d)+k) += I*(creal(*(G+l*(*d)+j)))*(cimag(*(G+l*(*d)+k)));
-        *(rrho+j*(*d)+k) -= I*(cimag(*(G+l*(*d)+j)))*(creal(*(G+l*(*d)+k)));
+        *(rdm+j*(*d)+k) += conj(*(G+l*(*d)+j))*(*(G+l*(*d)+k));
       }
-      *(rrho+j*(*d)+k) /= N2;
+      *(rdm+j*(*d)+k) /= N2;
       if (j != k) {
-        *(rrho+k*(*d)+j) = creal(*(rrho+j*(*d)+k)) - I*cimag(*(rrho+j*(*d)+k));
+        *(rdm+k*(*d)+j) = creal(*(rdm+j*(*d)+k)) - I*cimag(*(rdm+j*(*d)+k));
       }
     }
   }
@@ -33,25 +32,29 @@ void rdm_ginibre(int *d, double _Complex *rrho) {
 
 
 void rdm_ginibre_classes(int *d, double _Complex *rdm, int *nulle) {
-  // nulle: array of dimension dxd. nulle[j][k]=0 if
-  // that element must be zero (k>j). nulle[j][k]=1 otherwise.
+  // nulle: array of dimension dxd. nulle[j,k]=0 if
+  // rdm[j,k] must be zero (k>j). nulle[j][k]=1 otherwise.
   void zero_mat_c(int *, int *, double _Complex *); zero_mat_c(d,d,rdm);
   int j, k, l;
   double _Complex *G; G = (double _Complex *)malloc((*d)*(*d)*sizeof(double _Complex));
   double _Complex *v; v = (double _Complex *)malloc((*d)*sizeof(double _Complex));
   double _Complex *w; w = (double _Complex *)malloc((*d)*sizeof(double _Complex));
   double _Complex ip_c(int *, double _Complex *, double _Complex *), ipc;
-  double norm_c(int *, double _Complex *), norm2, norm_hs(int *, double _Complex *);
+  double norm_c(int *, double _Complex *), vnorm2, norm2, norm_hs(int *, double _Complex *);
   void ginibre(int *, double _Complex *); ginibre(d, G);
+  void array_display_c(int *, int *, double _Complex *);
+  double vnorm2_c(int *, double _Complex *);
   for (j = 0; j < ((*d)-1); j++) {
     for (k = (j+1); k < (*d); k++) { 
       if (*(nulle+j*(*d)+k) == 0) {
         for (l = 0; l < (*d); l++) {
-          *(v+l) = *(G+j*(*d)+l); *(w+l) = *(G+k*(*d)+l);
+          *(v+l) = *(G+l*(*d)+j); // |C_j(G)>
+          *(w+l) = *(G+l*(*d)+k); // |C_k(G)>
         }
-        ipc = ip_c(d, v, w); norm2 = pow(norm_c(d, v),2);
+        ipc = ip_c(d, v, w);
+        vnorm2 = vnorm2_c(d, v);
         for (l = 0; l < (*d); l++) {
-          *(G+k*(*d)+l) -= (ipc*(*(G+j*(*d)+l)))/norm2;
+          *(G+l*(*d)+k) -= (ipc*(*(G+l*(*d)+j)))/vnorm2;
         }
       }
     }
@@ -60,14 +63,11 @@ void rdm_ginibre_classes(int *d, double _Complex *rdm, int *nulle) {
   for (j = 0; j < (*d); j++) {
     for (k = j; k < (*d); k++) {
       for (l = 0; l < (*d); l++) {
-        *(rdm+j*(*d)+k) += (creal(*(G+j*(*d)+l)))*(creal(*(G+k*(*d)+l)));
-        *(rdm+j*(*d)+k) += (cimag(*(G+j*(*d)+l)))*(cimag(*(G+k*(*d)+l)));
-        *(rdm+j*(*d)+k) -= I*(creal(*(G+j*(*d)+l)))*(cimag(*(G+k*(*d)+l)));
-        *(rdm+j*(*d)+k) += I*(cimag(*(G+j*(*d)+l)))*(creal(*(G+k*(*d)+l)));
+        *(rdm+j*(*d)+k) += conj(*(G+l*(*d)+j))*(*(G+l*(*d)+k));
       }
       *(rdm+j*(*d)+k) /= norm2;
       if (j != k) {
-        *(rdm+k*(*d)+j) = creal(*(rdm+j*(*d)+k)) - I*cimag(*(rdm+j*(*d)+k));
+        *(rdm+k*(*d)+j) = creal(*(rdm+j*(*d)+k)) - cimag(*(rdm+j*(*d)+k))*I;
       }
     }
   }
@@ -82,12 +82,12 @@ void ginibre(int *d, double _Complex *G) {
   for (j = 0; j < (*d); j++) {
     for (k = 0; k < (*d); k++) {
       rng_gauss(&grn1, &grn2);
-      *(G+j*(*d)+k) = grn1 + I*grn2;
+      *(G+j*(*d)+k) = grn1 + grn2*I;
     }
   }
 }
 
-
+/*
 void rdm_pos_sub(int *d, double _Complex *rrho) { // only necessary condition
   double *rpv; 
   rpv = (double *)malloc((*d)*sizeof(double));
@@ -257,7 +257,6 @@ void rdm_test_ineq() {
 }
 
 
-
 void test_positivity() {
   void array_display_c(int *, int *, double _Complex *);
   void lapacke_zheevd(char *, int *, double _Complex *, double *);
@@ -267,17 +266,18 @@ void test_positivity() {
   double veccsum(int *, double *), sevals;
   double _Complex trace_c(int *, double _Complex *), tr;
   double _Complex *rrho;
-  void rdm_posl(int *, double _Complex *);
+  //void rdm_posl(int *, double _Complex *);
   void rdm_ginibre_classes(int *, double _Complex *, int *);
   void rdm_ginibre(int *, double _Complex *);
   int *nulle;
+  void zero_mat_i(int *, int *, int *); 
   for (j = 0; j < 8; j++) {
     d = pow(2,j+1);
     rrho = (double _Complex *)malloc(d*d*sizeof(double _Complex)); 
-    rdm_posl(&d, rrho);
+    //rdm_posl(&d, rrho);
     nulle = (int *)malloc(d*d*sizeof(int)); 
-    //void zero_mat_i(int *, int *, int *); zero_mat_i(&d,&d,nulle);
-    //rdm_ginibre_classes(&d, rrho, nulle);
+    zero_mat_i(&d,&d,nulle);
+    rdm_ginibre_classes(&d, rrho, nulle);
     //rdm_ginibre(&d, rrho);
     W = (double *)malloc(d*sizeof(double)); lapacke_zheevd(&jobz, &d, rrho, W);
     //printf("rrho \n"); array_display_c(&d,&d,rrho);
@@ -292,35 +292,48 @@ void test_positivity() {
     free(W); free(rrho); free(nulle);
   }
 }
-
+*/
 
 void rdm_test() {
   void rng_init(); rng_init();
-  int ns = pow(10,3), nqb = 8;
-  int j, k, l, m, d;
-  double coh1, coh2, coh3;
-  double _Complex *rrho1, *rrho2, *rrho3;
+  int ns = pow(10,3), nqb = 6;
+  int j, k, l, m, n, d;
+  double coh1, coh2;
+  double _Complex *rrho1, *rrho2;
   void rdm_ginibre(int *, double _Complex *);
-  //void rdm_posl(int *, double _Complex *);
-  //void rdm_pos_sub(int *, double _Complex *);
+  void rdm_ginibre_classes(int *, double _Complex *, int *);
   double coh_l1(int *, double _Complex *);
+  int *nulle;
+  void one_mat_i(int *, int *, int *); 
+  void array_display_c(int *, int *, double _Complex *);
+  int rn_int_ab(int *, int *), ct, a, b;
+  void array_display_i(int *, int *, int *);
   FILE *fd = fopen("plot.dat", "w");
   for (j = 0; j < nqb; j++) {
     d = pow(2,j+1);
     rrho1 = (double _Complex *)malloc(d*d*sizeof(double _Complex));
     rrho2 = (double _Complex *)malloc(d*d*sizeof(double _Complex));
-    rrho3 = (double _Complex *)malloc(d*d*sizeof(double _Complex));
-    coh1 = 0.0; coh2 = 0.0; coh3 = 0.0;
+    nulle = (int *)malloc(d*d*sizeof(int)); one_mat_i(&d,&d,nulle);
+    //printf("nulle \n"); if (d < 5) array_display_i(&d,&d,nulle); // ok
+    ct = 0; a = 0; b = d-1;
+    while (ct < d*(d-1)/4) { // chooses randomly the null coherences
+      m = rn_int_ab(&a,&b); n = rn_int_ab(&a,&b);
+      if (m != n) {
+        *(nulle+m*d+n) = 0; *(nulle+n*d+m) = 0; ct += 1;
+      }
+    }
+    //printf("nulle \n"); if (d < 5) array_display_i(&d,&d,nulle);
+    coh1 = 0; coh2 = 0;
     for (k = 0; k < ns; k++) {
       rdm_ginibre(&d, rrho1); coh1 += coh_l1(&d, rrho1);
-      //rdm_pos(&d, rrho2); coh2 += coh_l1(&d, rrho2);
-      //rdm_pos_sub(&d, rrho3); coh3 += coh_l1(&d, rrho3);
+      rdm_ginibre_classes(&d, rrho2, nulle); coh2 += coh_l1(&d, rrho2);
     }
+    //printf("rrho \n"); if (d == 4 || d == 16) array_display_c(&d,&d,rrho2);
     coh1 /= ((double) ns); 
     coh2 /= ((double) ns); 
-    coh3 /= ((double) ns);
-    fprintf(fd,"%i %f %f %f \n", d, ((double) coh1), ((double) coh2), ((double) coh3));
-    free(rrho1); free(rrho2); free(rrho3);
+    fprintf(fd,"%i %f %f \n", d, coh1, coh2);
+    printf("d = %i, C1 = %f, C2 = %f \n", d, coh1, coh2);
+    free(nulle); free(rrho1); free(rrho2);
   }
   fclose(fd);
   void plot(); plot();
@@ -331,8 +344,8 @@ int main() {
   void rng_init(); rng_init();
   //void test_rand_circle(); test_rand_circle(); // ok
   //void rdm_test_ineq(); rdm_test_ineq(); // ok
-  void test_positivity(); test_positivity(); // not ok
-  //void rdm_test(); rdm_test();
+  //void test_positivity(); test_positivity(); // not ok
+  void rdm_test(); rdm_test();
   return 0;
 }
 

@@ -29,11 +29,10 @@ double ip(int *d, double *v, double *w) {
 
 
 double _Complex ip_c(int *d, double _Complex *v, double _Complex *w) {
-  double _Complex ip = 0.0;
+  double _Complex ip = 0;
   int j;
   for (j = 0; j < (*d); j++) {
-    ip += (creal(*(v+j))*creal(*(w+j))+cimag(*(v+j))*cimag(*(w+j)));
-    ip += I*(creal(*(v+j))*cimag(*(w+j))-cimag(*(v+j))*creal(*(w+j)));
+    ip += conj(*(v+j))*(*(w+j));
   }
   return ip;
 }
@@ -51,6 +50,15 @@ double norm_c(int *d, double _Complex *v) {
   double _Complex ipc = ip_c(d, v, v);
   double n = sqrt(pow(creal(ipc),2)+pow(cimag(ipc),2)); 
   return n;
+}
+
+double vnorm2_c(int *d, double _Complex *v) {
+  int j;
+  double vn = 0;
+  for (j = 0; j < (*d); j++) {
+    vn += (pow(creal(*(v+j)),2)+pow(cimag(*(v+j)),2));
+  }
+  return vn;
 }
 
 
@@ -130,6 +138,16 @@ void array_display_c(int *nr, int *nc, double _Complex *A) {
   }
 }
 
+void array_display_i(int *nr, int *nc, int *A) {
+  int j,k;
+  for(j = 0; j < (*nr); j++){
+    for(k = 0; k < (*nc); k++){
+      printf("%i \t", *(A+j*(*nc)+k));
+    }
+    printf("\n");
+  }
+}
+
 
 double veccsum(int *d, double *vec) {
   double vcs = 0.0;
@@ -186,6 +204,15 @@ void zero_mat_i(int *nr, int *nc, int *A) {
   for (j = 0; j < (*nr); j++) {
     for (k = 0; k < (*nc); k++) {
       *(A+j*(*nc)+k) = 0;
+    }
+  }
+}
+
+void one_mat_i(int *nr, int *nc, int *A) {
+  int j, k;
+  for (j = 0; j < (*nr); j++) {
+    for (k = 0; k < (*nc); k++) {
+      *(A+j*(*nc)+k) = 1;
     }
   }
 }
