@@ -74,6 +74,54 @@ void rdm_ginibre_classes(int *d, double _Complex *rdm, int *nulle) {
   free(G); free(v); free(w);
 }
 
+void rdm_ginibre_classesl(int *d, double _Complex *rdm, int *nulle) {
+  // nulle: array of dimension dxd. nulle[j,k]=0 if
+  // rdm[j,k] must be zero (k>j). nulle[j][k]=1 otherwise.
+  void zero_mat_c(int *, int *, double _Complex *); zero_mat_c(d,d,rdm);
+  int j, k, l;
+  long double _Complex *G; 
+  G = (long double _Complex *)malloc((*d)*(*d)*sizeof(long double _Complex));
+  long double _Complex *v;
+  v = (long double _Complex *)malloc((*d)*sizeof(long double _Complex));
+  long double _Complex *w; 
+  w = (long double _Complex *)malloc((*d)*sizeof(long double _Complex));
+  long double _Complex ip_cl(int *, long double _Complex *, long double _Complex *), ipc;
+  long double norm_cl(int *, long double _Complex *), vnorm2;
+  double norm_hsl(int *, long double _Complex *);
+  double norm2;
+  void ginibrel(int *, long double _Complex *); ginibrel(d, G);
+  void array_display_c(int *, int *, double _Complex *);
+  double vnorm2_cl(int *, long double _Complex *);
+  for (j = 0; j < ((*d)-1); j++) {
+    for (k = (j+1); k < (*d); k++) { 
+      if (*(nulle+j*(*d)+k) == 0) {
+        for (l = 0; l < (*d); l++) {
+          *(v+l) = *(G+l*(*d)+j); // |C_j(G)>
+          *(w+l) = *(G+l*(*d)+k); // |C_k(G)>
+        }
+        ipc = ip_cl(d, v, w);
+        vnorm2 = vnorm2_cl(d, v);
+        for (l = 0; l < (*d); l++) {
+          *(G+l*(*d)+k) -= (ipc*(*(G+l*(*d)+j)))/vnorm2;
+        }
+      }
+    }
+  }
+  norm2 = ((double) powl(norm_hsl(d,G),2));
+  for (j = 0; j < (*d); j++) {
+    for (k = j; k < (*d); k++) {
+      for (l = 0; l < (*d); l++) {
+        *(rdm+j*(*d)+k) += ((double _Complex) conjl(*(G+l*(*d)+j))*(*(G+l*(*d)+k)));
+      }
+      *(rdm+j*(*d)+k) /= norm2;
+      if (j != k) {
+        *(rdm+k*(*d)+j) = creal(*(rdm+j*(*d)+k)) - cimag(*(rdm+j*(*d)+k))*I;
+      }
+    }
+  }
+  free(G); free(v); free(w);
+}
+
 
 void ginibre(int *d, double _Complex *G) {
   double grn1, grn2;
@@ -82,6 +130,18 @@ void ginibre(int *d, double _Complex *G) {
   for (j = 0; j < (*d); j++) {
     for (k = 0; k < (*d); k++) {
       rng_gauss(&grn1, &grn2);
+      *(G+j*(*d)+k) = grn1 + grn2*I;
+    }
+  }
+}
+
+void ginibrel(int *d, long double _Complex *G) {
+  long double grn1, grn2;
+  void rng_gaussl(long double *, long double *);
+  int j, k;
+  for (j = 0; j < (*d); j++) {
+    for (k = 0; k < (*d); k++) {
+      rng_gaussl(&grn1, &grn2);
       *(G+j*(*d)+k) = grn1 + grn2*I;
     }
   }
@@ -308,13 +368,13 @@ void rdm_test() {
   void array_display_c(int *, int *, double _Complex *);
   int rn_int_ab(int *, int *), ct, a, b;
   void array_display_i(int *, int *, int *);
+  void rdm_ginibre_classesl(int *, double _Complex *, int *);
   FILE *fd = fopen("plot.dat", "w");
   for (j = 0; j < nqb; j++) {
     d = pow(2,j+1);
     rrho1 = (double _Complex *)malloc(d*d*sizeof(double _Complex));
     rrho2 = (double _Complex *)malloc(d*d*sizeof(double _Complex));
     nulle = (int *)malloc(d*d*sizeof(int)); one_mat_i(&d,&d,nulle);
-    //printf("nulle \n"); if (d < 5) array_display_i(&d,&d,nulle); // ok
     ct = 0; a = 0; b = d-1;
     while (ct < d*(d-1)/4) { // chooses randomly the null coherences
       m = rn_int_ab(&a,&b); n = rn_int_ab(&a,&b);
@@ -322,13 +382,14 @@ void rdm_test() {
         *(nulle+m*d+n) = 0; *(nulle+n*d+m) = 0; ct += 1;
       }
     }
-    //printf("nulle \n"); if (d < 5) array_display_i(&d,&d,nulle);
+    printf("nulle \n"); if (d == 4) array_display_i(&d,&d,nulle);
     coh1 = 0; coh2 = 0;
     for (k = 0; k < ns; k++) {
       rdm_ginibre(&d, rrho1); coh1 += coh_l1(&d, rrho1);
-      rdm_ginibre_classes(&d, rrho2, nulle); coh2 += coh_l1(&d, rrho2);
+      //rdm_ginibre_classes(&d, rrho2, nulle); coh2 += coh_l1(&d, rrho2);
+      rdm_ginibre_classesl(&d, rrho2, nulle); coh2 += coh_l1(&d, rrho2);
     }
-    //printf("rrho \n"); if (d == 4 || d == 16) array_display_c(&d,&d,rrho2);
+    printf("rrho \n"); if (d == 4) array_display_c(&d,&d,rrho2);
     coh1 /= ((double) ns); 
     coh2 /= ((double) ns); 
     fprintf(fd,"%i %f %f \n", d, coh1, coh2);

@@ -25,6 +25,16 @@ void rng_gauss(double *grn1, double *grn2) {
   (*grn1) = u*w; (*grn2) = v*w;
 }
 
+void rng_gaussl(long double *grn1, long double *grn2) {
+  long double u, v, s = 2.0, w, a = -1.0, b = 1.0;
+  void rn_abl(long double *, long double *, long double *);
+  do {
+    rn_abl(&a, &b, &u); rn_abl(&a, &b, &v); s = powl(u,2)+powl(v,2);
+  } while ( s >= 1 || s == 0);
+  w = sqrtl(-2.0*logl(s)/s);
+  (*grn1) = u*w; (*grn2) = v*w;
+}
+
 void rng_exp(double *ern) {
   double genrand64_real1();
   double rn = 0.0;
@@ -42,6 +52,11 @@ void rng_expl(long double *ern) { // long double version
 void rn_ab(double *a, double *b, double *rn) {
   double genrand64_real1();
   (*rn) = (*a) + ((*b)-(*a))*genrand64_real1();
+}
+
+void rn_abl(long double *a, long double *b, long double *rn) {
+  long double genrand64_real1l();
+  (*rn) = (*a) + ((*b)-(*a))*genrand64_real1l();
 }
 
 int rn_int_ab(int *a, int *b) {

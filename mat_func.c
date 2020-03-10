@@ -37,6 +37,15 @@ double _Complex ip_c(int *d, double _Complex *v, double _Complex *w) {
   return ip;
 }
 
+long double _Complex ip_cl(int *d, long double _Complex *v, long double _Complex *w) {
+  long double _Complex ip = 0;
+  int j;
+  for (j = 0; j < (*d); j++) {
+    ip += conjl(*(v+j))*(*(w+j));
+  }
+  return ip;
+}
+
 
 double norm(int *d, double *v) {
   double ip(int *, double *, double *);
@@ -57,6 +66,16 @@ double vnorm2_c(int *d, double _Complex *v) {
   double vn = 0;
   for (j = 0; j < (*d); j++) {
     vn += (pow(creal(*(v+j)),2)+pow(cimag(*(v+j)),2));
+  }
+  return vn;
+}
+
+
+long double vnorm2_cl(int *d, long double _Complex *v) {
+  int j;
+  long double vn = 0;
+  for (j = 0; j < (*d); j++) {
+    vn += (powl(creall(*(v+j)),2)+powl(cimagl(*(v+j)),2));
   }
   return vn;
 }
@@ -86,6 +105,17 @@ double norm_hs(int *d, double _Complex *A) {
     }
   }
   return sqrt(hsn);
+}
+
+double norm_hsl(int *d, long double _Complex *A) {
+  int j, k;
+  long double hsn = 0;
+  for (j = 0; j < (*d); j++) {
+    for (k = 0; k < (*d); k++) {
+      hsn += (powl(creall(*(A+j*(*d)+k)),2) + powl(cimagl(*(A+j*(*d)+k)),2));
+    }
+  }
+  return sqrtl(hsn);
 }
 
 
